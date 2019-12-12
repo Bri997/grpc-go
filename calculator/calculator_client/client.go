@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/bri997/grpc-go-course/greet/hands-on/calculator/calculatorpb"
@@ -20,7 +21,8 @@ func main() {
 
 	c := calculatorpb.NewCalculateServiceClient(cc)
 
-	doUnary(c)
+	//doUnary(c)
+	doStreming(c)
 }
 
 func doUnary(c calculatorpb.CalculateServiceClient) {
@@ -35,4 +37,30 @@ func doUnary(c calculatorpb.CalculateServiceClient) {
 		log.Fatalf("error while calling Sum RPC: %v", err)
 	}
 	log.Printf("Response from Sum: %v", res.Result)
+}
+
+func doStreming(c calculatorpb.CalculateServiceClient) {
+	fmt.Println("Starting the server Prime stream...")
+	req := &calculatorpb.CalcPrimeRequest{
+
+		Number: 156546512,
+	}
+
+	stream, err := c.CalcPrime(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error while calling CalcPrime", err)
+	}
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Problem for loop", err)
+		}
+		fmt.Println(res.GetPrimeFactor())
+
+	}
+
 }

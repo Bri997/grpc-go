@@ -15,5 +15,14 @@ message SumResponse{
 
 service CalculateService{
     rpc Sum(SumRequest)returns(SumResponse);
+
+    rpc CalcPrime(CalcPrimeRequest) returns (stream CalcPrimeResponse){};
 }
 
+message CalcPrimeRequest{
+    int32 number = 1;
+}
+
+message CalcPrimeResponse{
+    int32 prime_factor = 1;
+}

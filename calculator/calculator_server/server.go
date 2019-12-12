@@ -24,6 +24,26 @@ func (*server) Sum(ctx context.Context, req *calculatorpb.SumRequest) (*calculat
 	return res, nil
 }
 
+func (*server) CalcPrime(req *calculatorpb.CalcPrimeRequest, stream calculatorpb.CalculateService_CalcPrimeServer) error {
+	fmt.Println("Cal-Prime server running", req)
+	number := req.GetNumber()
+	divisor := int32(2)
+
+	for number > 1 {
+		if number%divisor == 0 {
+			stream.Send(&calculatorpb.CalcPrimeResponse{
+				PrimeFactor: divisor,
+			})
+			number = number / divisor
+		} else {
+			divisor++
+			fmt.Println("Divisor has increased to \n", divisor)
+		}
+
+	}
+	return nil
+}
+
 func main() {
 	fmt.Println("hi Cal")
 
@@ -38,5 +58,10 @@ func main() {
 	calculatorpb.RegisterCalculateServiceServer(s, &server{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to server %v:", err)
+	}
+
+	calculatorpb.RegisterCalculateServiceServer(s, &server{})
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to server %v", err)
 	}
 }
