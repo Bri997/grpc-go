@@ -14,10 +14,17 @@ message SumResponse{
 }
 
 service CalculateService{
+        // Unary
     rpc Sum(SumRequest)returns(SumResponse);
 
+    // Server Sreaming
     rpc CalcPrime(CalcPrimeRequest) returns (stream CalcPrimeResponse){};
+
+    // Client Sreaming
+    rpc CalcAverage(stream CalcAvgRequest) returns (CalcAvgResponse){}
 }
+
+// Server Sreamming
 
 message CalcPrimeRequest{
     int32 number = 1;
@@ -26,3 +33,12 @@ message CalcPrimeRequest{
 message CalcPrimeResponse{
     int32 prime_factor = 1;
 }
+
+// Clients Sreaming 
+message CalcAvgRequest {
+    int32 number = 1;
+}
+
+message CalcAvgResponse {
+    double ave_result = 1;
+    }
